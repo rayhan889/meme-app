@@ -1,6 +1,7 @@
 import "~/styles/globals.css";
 
 import { Poppins } from "next/font/google";
+import Sidebar from "./_components/layout/Sidebar";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body className="h-screen bg-slate-950 text-white">
         <div className="container mx-auto h-full max-w-6xl xl:px-32">
           <div className="grid h-full grid-cols-4">
+            <Sidebar />
             <div className="col-span-3 border-x-[1px] border-neutral-800 lg:col-span-2">
               {children}
             </div>
