@@ -25,10 +25,19 @@ const Sidebar = () => {
             <Link
               key={item.name}
               href={item.href}
-              className="flex w-full cursor-pointer items-center  justify-start gap-x-2 rounded-full p-4 text-lg font-medium hover:bg-zinc-700"
+              className="flex items-center"
             >
-              {item.icon}
-              <span>{item.name}</span>
+              {/* mobile */}
+              <div className="relative flex h-14 w-14 cursor-pointer items-center justify-center rounded-lg p-4 hover:bg-slate-300 hover:bg-opacity-10 lg:hidden">
+                {item.icon}
+              </div>
+              {/* desktop */}
+              <div className="relative hidden w-full cursor-pointer items-center gap-x-4 rounded-lg p-4 hover:bg-slate-300 hover:bg-opacity-10 lg:flex">
+                {item.icon}
+                <span className="hidden text-lg font-semibold lg:block">
+                  {item.name}
+                </span>
+              </div>
             </Link>
           ))}
         </div>
