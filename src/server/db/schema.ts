@@ -1,15 +1,16 @@
 import { relations, sql } from "drizzle-orm";
 import {
-  index,
-  integer,
+  // index,
+  // integer,
   pgTableCreator,
-  primaryKey,
-  serial,
+  // primaryKey,
+  // serial,
   text,
   timestamp,
   varchar,
+  uuid,
 } from "drizzle-orm/pg-core";
-import { type AdapterAccount } from "next-auth/adapters";
+// import { type AdapterAccount } from "next-auth/adapters";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -19,22 +20,73 @@ import { type AdapterAccount } from "next-auth/adapters";
  */
 export const createTable = pgTableCreator((name) => `meme-app_${name}`);
 
-export const posts = createTable(
-  "post",
-  {
-    id: serial("id").primaryKey(),
-    name: varchar("name", { length: 256 }),
-    createdById: varchar("createdById", { length: 255 }).notNull(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updatedAt", { withTimezone: true }),
-  },
-  (example) => ({
-    createdByIdIdx: index("createdById_idx").on(example.createdById),
-    nameIndex: index("name_idx").on(example.name),
-  }),
-);
+export const users = createTable("user", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  fullName: varchar("fullName", { length: 255 }),
+  username: varchar("username", { length: 255 }),
+  email: varchar("email", { length: 255 }).notNull(),
+  emailVerified: timestamp("emailVerified", {
+    mode: "date",
+    withTimezone: true,
+  }).default(sql`CURRENT_TIMESTAMP`),
+  image: varchar("image", { length: 255 }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updatedAt", { withTimezone: true }),
+});
+
+export const userRelations = relations(users, ({ many }) => ({
+  posts: many(posts),
+}));
+
+export const posts = createTable("post", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  title: varchar("title", { length: 256 }),
+  description: text("description"),
+  userId: varchar("userId", { length: 255 }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updatedAt", { withTimezone: true }),
+});
+
+export const postsRelations = relations(posts, ({ many, one }) => ({
+  images: many(images),
+  user: one(users, { fields: [posts.userId], references: [users.id] }),
+}));
+
+export const images = createTable("image", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: varchar("name", { length: 256 }),
+  url: varchar("url", { length: 1024 }),
+  postId: varchar("postId", { length: 255 }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .default(sql`CURRENT_TIMESTAMP`)
+    .notNull(),
+  updatedAt: timestamp("updatedAt", { withTimezone: true }),
+});
+
+export const imagesRelations = relations(images, ({ one }) => ({
+  post: one(posts, { fields: [images.postId], references: [posts.id] }),
+}));
+
+// export const posts = createTable(
+//   "post",
+//   {
+//     id: serial("id").primaryKey(),
+//     name: varchar("name", { length: 256 }),
+//     createdById: varchar("createdById", { length: 255 }).notNull(),
+//     createdAt: timestamp("created_at", { withTimezone: true })
+//       .default(sql`CURRENT_TIMESTAMP`)
+//       .notNull(),
+//     updatedAt: timestamp("updatedAt", { withTimezone: true }),
+//   },
+//   (example) => ({
+//     createdByIdIdx: index("createdById_idx").on(example.createdById),
+//     nameIndex: index("name_idx").on(example.name),
+//   }),
+// );
 
 // export const users = createTable("user", {
 //   id: varchar("id", { length: 255 }).notNull().primaryKey(),
