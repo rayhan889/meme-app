@@ -7,7 +7,8 @@ This is a simple app that allows users to create and share memes.
 - [x] Deploy to Vercel
 - [x] Scaffold basic UI with mock data
 - [x] Add more basic UI w/ responsive design
-- [ ] Setup database with postgres and drizzle
+- [x] Setup database with postgres and drizzle
+- [ ] Fix UI grid layout for posts
 - [ ] Attach memes data from database to UI
 - [ ] Add authentication with NextAuth
 - [ ] Upload memes functionality

@@ -7,8 +7,23 @@ export default async function HomePage() {
       id: "1",
       title: "Meme 1",
       description: "This is a meme",
-      image:
-        "https://utfs.io/f/34a37097-3241-4474-ae16-b6236b52cd13-m2xtte.jpg",
+      image: [
+        {
+          id: "1",
+          name: "meme1.jpg",
+          url: "https://utfs.io/f/34a37097-3241-4474-ae16-b6236b52cd13-m2xtte.jpg",
+        },
+        {
+          id: "2",
+          name: "meme2.jpg",
+          url: "https://utfs.io/f/34a37097-3241-4474-ae16-b6236b52cd13-m2xtte.jpg",
+        },
+        {
+          id: "3",
+          name: "meme3.jpg",
+          url: "https://utfs.io/f/34a37097-3241-4474-ae16-b6236b52cd13-m2xtte.jpg",
+        },
+      ],
       author: "@username",
       createdAt: "2022-01-01T00:00:00.000Z",
     },
@@ -16,8 +31,33 @@ export default async function HomePage() {
       id: "1",
       title: "Meme 2",
       description: "This is a meme",
-      image:
-        "https://utfs.io/f/139fdf3b-a171-421c-8645-79e3c4651b33-y0dyx0.jpg",
+      image: [
+        {
+          id: "1",
+          name: "meme1.jpg",
+          url: "https://utfs.io/f/139fdf3b-a171-421c-8645-79e3c4651b33-y0dyx0.jpg",
+        },
+        {
+          id: "2",
+          name: "meme2.jpg",
+          url: "https://utfs.io/f/139fdf3b-a171-421c-8645-79e3c4651b33-y0dyx0.jpg",
+        },
+        {
+          id: "3",
+          name: "meme3.jpg",
+          url: "https://utfs.io/f/139fdf3b-a171-421c-8645-79e3c4651b33-y0dyx0.jpg",
+        },
+        {
+          id: "4",
+          name: "meme4.jpg",
+          url: "https://utfs.io/f/139fdf3b-a171-421c-8645-79e3c4651b33-y0dyx0.jpg",
+        },
+        {
+          id: "5",
+          name: "meme5.jpg",
+          url: "https://utfs.io/f/139fdf3b-a171-421c-8645-79e3c4651b33-y0dyx0.jpg",
+        },
+      ],
       author: "@username",
       createdAt: "2022-01-01T00:00:00.000Z",
     },
@@ -25,8 +65,23 @@ export default async function HomePage() {
       id: "1",
       title: "Meme 3",
       description: "This is a meme",
-      image:
-        "https://utfs.io/f/08d696f9-4b12-44ad-b615-b675d5eaa117-16py06.jpg",
+      image: [
+        {
+          id: "1",
+          name: "meme1.jpg",
+          url: "https://utfs.io/f/08d696f9-4b12-44ad-b615-b675d5eaa117-16py06.jpg",
+        },
+        {
+          id: "2",
+          name: "meme2.jpg",
+          url: "https://utfs.io/f/08d696f9-4b12-44ad-b615-b675d5eaa117-16py06.jpg",
+        },
+        {
+          id: "3",
+          name: "meme3.jpg",
+          url: "https://utfs.io/f/08d696f9-4b12-44ad-b615-b675d5eaa117-16py06.jpg",
+        },
+      ],
       author: "@username",
       createdAt: "2022-01-01T00:00:00.000Z",
     },
@@ -69,11 +124,19 @@ export default async function HomePage() {
                 <div className="text-sm">{meme.description}</div>
               </div>
             </div>
-            <img
-              src={meme.image}
-              alt={meme.title}
-              className="h-auto w-full rounded-md"
-            />
+            <div className="grid grid-cols-2 gap-2">
+              {meme.image.map((image, idx) => {
+                const isLast = idx === meme.image.length - 1;
+                return (
+                  <img
+                    key={image.id}
+                    src={image.url}
+                    alt={image.name}
+                    className={`max-h-[18rem] w-full rounded-md ${isLast ? "col-span-2 object-cover" : ""}`}
+                  />
+                );
+              })}
+            </div>
           </div>
         ))}
       </div>
