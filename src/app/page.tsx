@@ -1,6 +1,7 @@
 import { LuUser } from "react-icons/lu";
+import { db } from "~/server/db";
 
-export default function HomePage() {
+export default async function HomePage() {
   const mockData = [
     {
       id: "1",
