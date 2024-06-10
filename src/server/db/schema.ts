@@ -43,7 +43,7 @@ export const userRelations = relations(users, ({ many }) => ({
 export const posts = createTable("post", {
   id: uuid("id").defaultRandom().primaryKey(),
   title: varchar("title", { length: 256 }),
-  description: text("description"),
+  description: text("description").notNull(),
   userId: varchar("userId", { length: 255 }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .default(sql`CURRENT_TIMESTAMP`)

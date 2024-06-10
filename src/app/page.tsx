@@ -1,91 +1,39 @@
+import { desc, eq, inArray } from "drizzle-orm";
 import { LuUser } from "react-icons/lu";
 import { db } from "~/server/db";
+import { images, posts, postsRelations, users } from "~/server/db/schema";
 
 export default async function HomePage() {
-  const mockData = [
-    {
-      id: "1",
-      title: "Meme 1",
-      description: "This is a meme",
-      image: [
-        {
-          id: "1",
-          name: "meme1.jpg",
-          url: "https://utfs.io/f/34a37097-3241-4474-ae16-b6236b52cd13-m2xtte.jpg",
-        },
-        {
-          id: "2",
-          name: "meme2.jpg",
-          url: "https://utfs.io/f/34a37097-3241-4474-ae16-b6236b52cd13-m2xtte.jpg",
-        },
-        {
-          id: "3",
-          name: "meme3.jpg",
-          url: "https://utfs.io/f/34a37097-3241-4474-ae16-b6236b52cd13-m2xtte.jpg",
-        },
-      ],
-      author: "@username",
-      createdAt: "2022-01-01T00:00:00.000Z",
-    },
-    {
-      id: "1",
-      title: "Meme 2",
-      description: "This is a meme",
-      image: [
-        {
-          id: "1",
-          name: "meme1.jpg",
-          url: "https://utfs.io/f/139fdf3b-a171-421c-8645-79e3c4651b33-y0dyx0.jpg",
-        },
-        {
-          id: "2",
-          name: "meme2.jpg",
-          url: "https://utfs.io/f/139fdf3b-a171-421c-8645-79e3c4651b33-y0dyx0.jpg",
-        },
-        {
-          id: "3",
-          name: "meme3.jpg",
-          url: "https://utfs.io/f/139fdf3b-a171-421c-8645-79e3c4651b33-y0dyx0.jpg",
-        },
-        {
-          id: "4",
-          name: "meme4.jpg",
-          url: "https://utfs.io/f/139fdf3b-a171-421c-8645-79e3c4651b33-y0dyx0.jpg",
-        },
-        {
-          id: "5",
-          name: "meme5.jpg",
-          url: "https://utfs.io/f/139fdf3b-a171-421c-8645-79e3c4651b33-y0dyx0.jpg",
-        },
-      ],
-      author: "@username",
-      createdAt: "2022-01-01T00:00:00.000Z",
-    },
-    {
-      id: "1",
-      title: "Meme 3",
-      description: "This is a meme",
-      image: [
-        {
-          id: "1",
-          name: "meme1.jpg",
-          url: "https://utfs.io/f/08d696f9-4b12-44ad-b615-b675d5eaa117-16py06.jpg",
-        },
-        {
-          id: "2",
-          name: "meme2.jpg",
-          url: "https://utfs.io/f/08d696f9-4b12-44ad-b615-b675d5eaa117-16py06.jpg",
-        },
-        {
-          id: "3",
-          name: "meme3.jpg",
-          url: "https://utfs.io/f/08d696f9-4b12-44ad-b615-b675d5eaa117-16py06.jpg",
-        },
-      ],
-      author: "@username",
-      createdAt: "2022-01-01T00:00:00.000Z",
-    },
-  ];
+  const memePostsQuery = await db
+    .select({
+      id: posts.id,
+      title: posts.title,
+      description: posts.description,
+      author: users.username,
+      createdAt: posts.createdAt,
+    })
+    .from(posts)
+    .leftJoin(users, eq(posts.userId, "9305b1ad-4c32-4736-ba7d-e8428530f0e7"));
+
+  const imagesQuery = await db
+    .select({
+      id: images.id,
+      name: images.name,
+      url: images.url,
+      postId: images.postId,
+    })
+    .from(images)
+    .where(
+      inArray(
+        images.postId,
+        memePostsQuery.map((meme) => meme.id),
+      ),
+    );
+
+  const memePostsWithImages = memePostsQuery.map((meme) => ({
+    ...meme,
+    image: imagesQuery.filter((image) => image.postId === meme.id),
+  }));
 
   return (
     <main className="flex h-full w-full flex-col items-center ">
@@ -104,7 +52,7 @@ export default async function HomePage() {
       </div>
       {/* Memes posts list */}
       <div className="flex w-full flex-col">
-        {mockData.map((meme) => (
+        {memePostsWithImages.map((meme) => (
           <div
             key={meme.id}
             className="flex w-full flex-col items-center gap-y-2 border-b-[1px] border-neutral-800 p-2"
@@ -130,9 +78,9 @@ export default async function HomePage() {
                 return (
                   <img
                     key={image.id}
-                    src={image.url}
-                    alt={image.name}
-                    className={`max-h-[18rem] w-full rounded-md ${isLast ? "col-span-2 object-cover" : ""}`}
+                    src={image.url ?? ""}
+                    alt={image.name ?? ""}
+                    className={`h-[14rem] w-full rounded-md object-cover ${isLast && meme.image.length > 2 ? "col-span-2" : ""}`}
                   />
                 );
               })}
