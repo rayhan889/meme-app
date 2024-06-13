@@ -28,8 +28,8 @@ export default async function RootLayout({
       <body className="h-screen bg-slate-950 text-white">
         <div className="container mx-auto h-full max-w-6xl xl:px-32">
           <div className="grid h-full grid-cols-4">
-            <Sidebar />
             <SessionProvider session={session}>
+              <Sidebar />
               <div className="col-span-3 border-x-[1px] border-neutral-800 lg:col-span-2">
                 {children}
               </div>
