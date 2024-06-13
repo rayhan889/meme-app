@@ -6,6 +6,7 @@ import {
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
 import DiscordProvider from "next-auth/providers/discord";
+import GithubProvider from "next-auth/providers/github";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
@@ -44,24 +45,28 @@ declare module "next-auth" {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    session({ session, user }) {
+      console.log("session", session);
+      if (session.user?.id) {
+        return {
+          ...session,
+          user: {
+            ...session.user,
+            id: user.id,
+          },
+        };
+      }
+      return session;
+    },
+    redirect({ url, baseUrl }) {
+      return `${baseUrl}${"/home"}`;
+    },
   },
-  adapter: DrizzleAdapter(db, {
-    usersTable: users,
-    accountsTable: accounts,
-    sessionsTable: sessions,
-    verificationTokensTable: verificationTokens,
-  }) as Adapter,
   providers: [
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
+      authorization: "https://discord.com/oauth2/authorize?scope=guilds+email",
     }),
     /**
      * ...add more providers here.

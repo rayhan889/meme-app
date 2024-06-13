@@ -1,7 +1,7 @@
-import { desc, eq, inArray } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { LuUser } from "react-icons/lu";
 import { db } from "~/server/db";
-import { images, posts, postsRelations, users } from "~/server/db/schema";
+import { images, posts, users } from "~/server/db/schema";
 
 export default async function HomePage() {
   const memePostsQuery = await db
@@ -9,7 +9,7 @@ export default async function HomePage() {
       id: posts.id,
       title: posts.title,
       description: posts.description,
-      author: users.username,
+      author: users.fullName,
       createdAt: posts.createdAt,
     })
     .from(posts)

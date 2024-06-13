@@ -2,6 +2,8 @@ import "~/styles/globals.css";
 
 import { Poppins } from "next/font/google";
 import Sidebar from "./_components/layout/Sidebar";
+import { getServerSession } from "next-auth";
+import SessionProvider from "./_components/SessionProvider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -15,20 +17,23 @@ export const metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession();
   return (
     <html lang="en" className={`${poppins.className}`}>
       <body className="h-screen bg-slate-950 text-white">
         <div className="container mx-auto h-full max-w-6xl xl:px-32">
           <div className="grid h-full grid-cols-4">
             <Sidebar />
-            <div className="col-span-3 border-x-[1px] border-neutral-800 lg:col-span-2">
-              {children}
-            </div>
+            <SessionProvider session={session}>
+              <div className="col-span-3 border-x-[1px] border-neutral-800 lg:col-span-2">
+                {children}
+              </div>
+            </SessionProvider>
           </div>
         </div>
       </body>
