@@ -66,7 +66,6 @@ export const authOptions: NextAuthOptions = {
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
-      authorization: "https://discord.com/oauth2/authorize?scope=guilds+email",
     }),
     /**
      * ...add more providers here.
