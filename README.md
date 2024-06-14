@@ -14,4 +14,6 @@ This is a simple app that allows users to create and share memes.
 - [x] Separate queries into different files
 - [x] Tidy up UI and some pages
 - [x] Conditional rendering when user authenticated
+- [ ] Upload button UI
+- [ ] Add modal for uploading memes
 - [ ] Upload memes functionality
