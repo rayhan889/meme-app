@@ -1,7 +1,7 @@
 import React from "react";
 
-const UploadPostPage = () => {
-  return <div>UploadPostPage</div>;
+const UploadMemePage = () => {
+  return <div>UploadMemePage</div>;
 };
 
-export default UploadPostPage;
+export default UploadMemePage;

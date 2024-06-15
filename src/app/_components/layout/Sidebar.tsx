@@ -77,9 +77,16 @@ const Sidebar = () => {
               </button>
             </>
           )}
-          <Button className="bg-primary h-12 w-12 rounded-full text-lg font-semibold tracking-wide lg:w-full">
-            <span className="hidden lg:block">Upload</span>
-            <LuUpload className="h-4 w-4 lg:hidden" />
+          <Button
+            className="bg-primary h-12 w-12 rounded-full lg:w-full"
+            asChild
+          >
+            <Link href={"/compose/post"}>
+              <span className="hidden text-lg font-semibold tracking-wide lg:block">
+                Upload
+              </span>
+              <LuUpload className="h-4 w-4 lg:hidden" />
+            </Link>
           </Button>
         </div>
       </div>

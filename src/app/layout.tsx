@@ -19,8 +19,10 @@ export const metadata = {
 
 export default async function RootLayout({
   children,
+  modal,
 }: {
   children: React.ReactNode;
+  modal: React.ReactNode;
 }) {
   const session = await getServerSession();
   return (
@@ -32,6 +34,8 @@ export default async function RootLayout({
               <Sidebar />
               <div className="col-span-3 border-x-[1px] border-neutral-800 lg:col-span-2">
                 {children}
+                {modal}
+                <div id="modal-root" />
               </div>
             </SessionProvider>
           </div>
