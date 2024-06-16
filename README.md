@@ -17,4 +17,5 @@ This is a simple app that allows users to create and share memes.
 - [x] Upload button UI
 - [x] Add modal for uploading memes
 - [x] config uploadthing
+- [ ] Custom upload image button component
 - [ ] Upload memes functionality

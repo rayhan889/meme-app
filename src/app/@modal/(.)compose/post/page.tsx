@@ -2,6 +2,7 @@ import { Modal } from "./modal";
 import { getServerSession } from "next-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
+import UploadImage from "~/app/_components/UploadImage";
 
 export default async function UploadMemeModal() {
   const session = await getServerSession();
@@ -20,7 +21,10 @@ export default async function UploadMemeModal() {
             className="mr-2 h-12 w-full border-none bg-transparent p-2 outline-none"
           />
         </div>
-        <div className="flex justify-end">
+        <div className="flex w-full items-center">
+          <div className="flex flex-1 items-center">
+            <UploadImage />
+          </div>
           <Button>Post</Button>
         </div>
       </div>
