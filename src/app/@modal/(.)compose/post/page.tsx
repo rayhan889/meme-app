@@ -1,29 +1,131 @@
+"use client";
+
 import { Modal } from "./modal";
-import { getServerSession } from "next-auth";
+import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
-import UploadImage from "~/app/_components/UploadImage";
+import { useUploadThing } from "~/utils/uploadthing";
+import { LuImage, LuX } from "react-icons/lu";
+import { useState, useEffect } from "react";
+import { type ClientUploadedFileData } from "uploadthing/types";
+import { LoadingSpinnerSVG } from "~/components/ui/LoadingSpinner";
 
-export default async function UploadMemeModal() {
-  const session = await getServerSession();
+// inferred input off useUploadThing
+type Input = Parameters<typeof useUploadThing>;
+
+const useUploadThingInputProps = (...args: Input) => {
+  const $ut = useUploadThing(...args);
+
+  const onChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+
+    const selectedFiles = Array.from(e.target.files);
+    const result = await $ut.startUpload(selectedFiles);
+
+    console.log("uploaded files", result);
+    // TODO: persist result in state maybe?
+  };
+
+  return {
+    inputProps: {
+      onChange,
+      multiple: ($ut.permittedFileInfo?.config?.image?.maxFileCount ?? 1) > 1,
+      accept: "image/*",
+    },
+    isUploading: $ut.isUploading,
+  };
+};
+
+export default function UploadMemeModal() {
+  const pathname = usePathname();
+  const currentRoute = pathname + "/compose/post";
+  const [selectedImages, setSelectedImages] = useState<
+    ClientUploadedFileData<{
+      uploadedBy: string;
+    }>[]
+  >([]);
+
+  const { data: session } = useSession();
+  const { inputProps, isUploading } = useUploadThingInputProps(
+    "imageUploader",
+    {
+      onClientUploadComplete: (result) => {
+        setSelectedImages((prevImages) => [...prevImages, ...result]);
+      },
+    },
+  );
+
+  useEffect(() => {
+    if (pathname !== currentRoute) {
+      setSelectedImages([]);
+    }
+  }, [pathname, currentRoute]);
 
   return (
     <Modal>
       <div className="mt-10 flex w-full flex-col gap-y-4">
-        <div className="flex flex-row items-center justify-start gap-x-4 border-b-[1px] border-neutral-800 pb-4">
+        <div className="flex flex-row items-start justify-start gap-x-4 border-b-[1px] border-neutral-800 pb-4">
           <Avatar>
             <AvatarImage src={session?.user.image ?? ""} />
             <AvatarFallback>{session?.user.name ?? ""}</AvatarFallback>
           </Avatar>
-          <input
-            type="text"
-            placeholder="What's fun today?"
-            className="mr-2 h-12 w-full border-none bg-transparent p-2 outline-none"
-          />
+          <div className="flex w-full flex-col">
+            <input
+              type="text"
+              placeholder="What's fun today?"
+              className="mr-2 h-12 w-full border-none bg-transparent p-2 outline-none"
+            />
+            {isUploading && selectedImages.length === 0 && (
+              <div className="mt-4 flex h-64 w-full flex-col items-center justify-center gap-y-4">
+                <LoadingSpinnerSVG />
+                <span className="text-sm text-neutral-400">
+                  Loading images...
+                </span>
+              </div>
+            )}
+            {selectedImages.length > 0 && (
+              <div className="mt-4 flex max-w-full gap-x-3 overflow-x-auto overflow-y-hidden whitespace-nowrap">
+                {selectedImages.map((image) => (
+                  <div
+                    key={image.key}
+                    className={`relative inline-block h-64 ${selectedImages.length > 1 ? "min-w-[256px]" : "w-full"}`}
+                  >
+                    <button
+                      className="absolute right-2 top-2 rounded-full bg-neutral-800/70 p-2 text-lg"
+                      onClick={() =>
+                        setSelectedImages(
+                          selectedImages.filter((i) => i.key !== image.key),
+                        )
+                      }
+                    >
+                      <LuX />
+                    </button>
+                    <img
+                      className="h-full w-full rounded-lg object-cover"
+                      src={image.url}
+                      alt={image.name}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         <div className="flex w-full items-center">
           <div className="flex flex-1 items-center">
-            <UploadImage />
+            <label
+              htmlFor="upload-file"
+              className="flex cursor-pointer items-center gap-x-2 text-white"
+            >
+              <LuImage className="h-6 w-6 text-primary" />
+              <input
+                type="file"
+                id="upload-file"
+                className="sr-only"
+                {...inputProps}
+              />
+            </label>
           </div>
           <Button>Post</Button>
         </div>
