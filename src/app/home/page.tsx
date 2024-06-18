@@ -35,9 +35,13 @@ const Home = async () => {
       </div>
       {/* Memes posts list */}
       <div className="flex w-full flex-col">
-        {memePostsWithImages.map((meme) => (
+        {[
+          ...memePostsWithImages,
+          ...memePostsWithImages,
+          ...memePostsWithImages,
+        ].map((meme, i) => (
           <div
-            key={meme.id}
+            key={meme.id + "-" + i}
             className="flex w-full flex-col items-center gap-y-2 border-b-[1px] border-neutral-800 p-2"
           >
             <div className="flex w-full items-center gap-x-2">
