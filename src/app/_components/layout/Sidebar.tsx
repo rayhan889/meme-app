@@ -4,7 +4,6 @@ import Link from "next/link";
 import { LuHome, LuSearch, LuLogOut, LuLogIn, LuUpload } from "react-icons/lu";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { Button } from "~/components/ui/button";
-
 const Sidebar = () => {
   const { data: session } = useSession();
 
@@ -92,13 +91,15 @@ const Sidebar = () => {
                 </span>
               </button>
             )}
-            <Button className="h-12 w-full rounded-full bg-primary" asChild>
-              <Link href={"/compose/post"}>
-                <span className="text-lg font-semibold tracking-wide">
-                  Upload
-                </span>
-              </Link>
-            </Button>
+            {session && (
+              <Button className="h-12 w-full rounded-full bg-primary" asChild>
+                <Link href={"/compose/post"}>
+                  <span className="text-lg font-semibold tracking-wide">
+                    Upload
+                  </span>
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
       </div>

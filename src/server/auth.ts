@@ -1,4 +1,5 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import { eq } from "drizzle-orm";
 import {
   getServerSession,
   type DefaultSession,
@@ -6,7 +7,6 @@ import {
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
 import DiscordProvider from "next-auth/providers/discord";
-import GithubProvider from "next-auth/providers/github";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
@@ -16,6 +16,12 @@ import {
   users,
   verificationTokens,
 } from "~/server/db/schema";
+import {
+  AuthUser,
+  jwtHelper,
+  tokenOnWeek,
+  tokenOneDay,
+} from "~/utils/jwtHelper";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -26,16 +32,27 @@ import {
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
-      id: string;
-      // ...other properties
-      // role: UserRole;
+      userId?: string;
+      name?: string;
     } & DefaultSession["user"];
+    error?: "RefreshAccessTokenError";
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    userId?: string;
+    name?: string;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    user: AuthUser;
+    accessToken: string;
+    refreshToken: string;
+    accessTokenExpired: number;
+    refreshTokenExpired: number;
+    error?: "RefreshAccessTokenError";
+  }
 }
 
 /**
@@ -44,18 +61,70 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
+  session: {
+    strategy: "jwt",
+    maxAge: 60 * 60,
+  },
   callbacks: {
-    session({ session, user }) {
-      console.log("session", session);
-      if (session.user?.id) {
+    async jwt({ token, user, profile, account, isNewUser }) {
+      if (user) {
+        const authUser = {
+          id: user.id,
+          name: user.name,
+        } as unknown as AuthUser;
+
+        const accessToken = await jwtHelper.createAccessToken(authUser);
+        const refreshToken = await jwtHelper.createRefreshToken(authUser);
+        const accessTokenExpired = Date.now() / 1000 + tokenOneDay;
+        const refreshTokenExpired = Date.now() / 1000 + tokenOnWeek;
+
+        return {
+          ...token,
+          accessToken,
+          refreshToken,
+          accessTokenExpired,
+          refreshTokenExpired,
+          user: authUser,
+        };
+      } else {
+        if (token) {
+          if (Date.now() / 1000 > token.accessTokenExpired) {
+            const verifyToken = await jwtHelper.verifyToken(token.refreshToken);
+
+            if (verifyToken) {
+              const user = await db
+                .select()
+                .from(users)
+                .where(eq(users.id, verifyToken.user.id));
+
+              if (user) {
+                const accessToken = await jwtHelper.createAccessToken(
+                  token.user,
+                );
+                const accessTokenExpired = Date.now() / 1000 + tokenOneDay;
+
+                return { ...token, accessToken, accessTokenExpired };
+              }
+            }
+
+            return { ...token, error: "RefreshAccessTokenError" };
+          }
+        }
+      }
+      return token;
+    },
+    session({ session, token }) {
+      if (token) {
         return {
           ...session,
           user: {
             ...session.user,
-            id: user.id,
+            name: token.user.name,
+            id: token.user.id,
           },
         };
       }
+      session.error = "RefreshAccessTokenError";
       return session;
     },
     redirect({ url, baseUrl }) {

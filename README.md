@@ -20,4 +20,5 @@ This is a simple app that allows users to create and share memes.
 - [x] Custom upload image button component
 - [x] Image preview in modal
 - [x] Image control(exclude, disappear when leave) in modal
+- [ ] Fix auth w/ session
 - [ ] Upload memes functionality
