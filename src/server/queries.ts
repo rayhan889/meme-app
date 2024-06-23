@@ -7,7 +7,6 @@ export const getMemes = async () => {
   const memePostsQuery = await db
     .select({
       id: posts.id,
-      title: posts.title,
       description: posts.description,
       author: users.fullName,
       createdAt: posts.createdAt,

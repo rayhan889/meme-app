@@ -116,7 +116,6 @@ export const verificationTokens = createTable(
 
 export const posts = createTable("post", {
   id: varchar("id", { length: 255 }).notNull().primaryKey(),
-  title: varchar("title", { length: 256 }),
   description: text("description").notNull(),
   userId: varchar("userId", { length: 255 }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
