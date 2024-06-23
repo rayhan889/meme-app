@@ -6,10 +6,11 @@ import { usePathname } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { useUploadThing } from "~/utils/uploadthing";
-import { LuImage, LuX } from "react-icons/lu";
+import { LuImage, LuX, LuSendHorizonal } from "react-icons/lu";
 import { useState, useEffect } from "react";
 import { type ClientUploadedFileData } from "uploadthing/types";
 import { LoadingSpinnerSVG } from "~/components/ui/LoadingSpinner";
+import { Input } from "~/components/ui/input";
 
 // inferred input off useUploadThing
 type Input = Parameters<typeof useUploadThing>;
@@ -40,6 +41,7 @@ const useUploadThingInputProps = (...args: Input) => {
 export default function UploadMemeModal() {
   const pathname = usePathname();
   const currentRoute = pathname + "/compose/post";
+  const [description, setDescription] = useState<string>("");
   const [selectedImages, setSelectedImages] = useState<
     ClientUploadedFileData<{
       uploadedBy: string;
@@ -59,8 +61,21 @@ export default function UploadMemeModal() {
   useEffect(() => {
     if (pathname !== currentRoute) {
       setSelectedImages([]);
+      setDescription("");
     }
   }, [pathname, currentRoute]);
+
+  const handleUpload = async () => {
+    const payload = {
+      description,
+      images: selectedImages.map((image) => ({
+        url: image.url,
+        name: image.name,
+      })),
+    };
+
+    console.log("Post payload", payload);
+  };
 
   return (
     <Modal>
@@ -71,10 +86,11 @@ export default function UploadMemeModal() {
             <AvatarFallback>{session?.user.name ?? ""}</AvatarFallback>
           </Avatar>
           <div className="flex w-full flex-col">
-            <input
+            <Input
               type="text"
               placeholder="What's fun today?"
-              className="mr-2 h-12 w-full border-none bg-transparent p-2 outline-none"
+              className="mr-2 h-12 w-full border-none bg-transparent p-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-opacity-0 focus-visible:ring-offset-0"
+              onChange={(e) => setDescription(e.target.value)}
             />
             {isUploading && selectedImages.length === 0 && (
               <div className="mt-4 flex h-64 w-full flex-col items-center justify-center gap-y-4">
@@ -127,7 +143,14 @@ export default function UploadMemeModal() {
               />
             </label>
           </div>
-          <Button>Post</Button>
+          <Button
+            className="flex items-center gap-x-2"
+            onClick={handleUpload}
+            disabled={isUploading || description === ""}
+          >
+            Post
+            <LuSendHorizonal />
+          </Button>
         </div>
       </div>
     </Modal>
