@@ -17,7 +17,7 @@ import {
   verificationTokens,
 } from "~/server/db/schema";
 import {
-  AuthUser,
+  type AuthUser,
   jwtHelper,
   tokenOnWeek,
   tokenOneDay,
@@ -32,15 +32,17 @@ import {
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
-      userId?: string;
+      userId: string;
       name?: string;
+      token?: string;
     } & DefaultSession["user"];
     error?: "RefreshAccessTokenError";
   }
 
   interface User {
-    userId?: string;
+    userId: string;
     name?: string;
+    token?: string;
   }
 }
 
@@ -66,7 +68,7 @@ export const authOptions: NextAuthOptions = {
     maxAge: 60 * 60,
   },
   callbacks: {
-    async jwt({ token, user, profile, account, isNewUser }) {
+    async jwt({ token, user }) {
       if (user) {
         const authUser = {
           id: user.id,
@@ -121,6 +123,7 @@ export const authOptions: NextAuthOptions = {
             ...session.user,
             name: token.user.name,
             userId: token.user.id,
+            token: token.accessToken,
           },
         };
       }
@@ -131,6 +134,12 @@ export const authOptions: NextAuthOptions = {
       return `${baseUrl}${"/home"}`;
     },
   },
+  adapter: DrizzleAdapter(db, {
+    usersTable: users,
+    accountsTable: accounts,
+    sessionsTable: sessions,
+    verificationTokensTable: verificationTokens,
+  }) as Adapter,
   providers: [
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,
