@@ -2,10 +2,10 @@ import "server-only";
 import { eq, inArray } from "drizzle-orm";
 import { db } from "~/server/db";
 import { images, posts, users } from "~/server/db/schema";
+import { v4 as uuidv4 } from "uuid";
 
 export type MemePayload = {
   description: string;
-  userId: string;
   images: {
     name: string;
     url: string;
@@ -19,7 +19,7 @@ export const getAllMemes = async () => {
       .select({
         id: posts.id,
         description: posts.description,
-        author: users.fullName,
+        author: users.name,
         createdAt: posts.createdAt,
       })
       .from(posts)
@@ -61,7 +61,7 @@ export const getMemes = async (userId?: string) => {
       .select({
         id: posts.id,
         description: posts.description,
-        author: users.fullName,
+        author: users.name,
         createdAt: posts.createdAt,
       })
       .from(posts)
@@ -94,5 +94,32 @@ export const getMemes = async (userId?: string) => {
   } catch (error) {
     console.error("Error fetching memes:", error);
     throw error;
+  }
+};
+
+export const createMemePost = async (data: MemePayload, userId: string) => {
+  const postId = uuidv4();
+
+  // let user = await db.select(users).where({});
+
+  await db.insert(posts).values({
+    id: postId,
+    description: data.description,
+    userId,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
+
+  if (data.images && data.images.length > 0) {
+    await db.insert(images).values(
+      data.images.map((image) => ({
+        id: uuidv4(),
+        name: image.name,
+        url: image.url,
+        postId: postId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })),
+    );
   }
 };
