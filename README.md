@@ -24,4 +24,5 @@ This is a simple app that allows users to create and share memes.
 - [x] Fix auth, user id and session
 - [x] Get all memes from database query
 - [x] Fix get memes query and some conditional rendering
-- [ ] Upload memes functionality
+- [x] Store loggedin user data in database
+- [x] Upload memes functionality

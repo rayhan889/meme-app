@@ -74,7 +74,24 @@ export default function UploadMemeModal() {
       })),
     };
 
-    console.log("Post payload", payload);
+    if (!session) return;
+
+    try {
+      const response = await fetch("/api/meme", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.user.token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+      if (response.ok) {
+        setDescription("");
+        setSelectedImages([]);
+      }
+    } catch (error) {
+      console.log("error", error);
+    }
   };
 
   return (
