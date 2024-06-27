@@ -22,14 +22,16 @@ const Sidebar = () => {
 
   return (
     <>
-      <Button
-        className="fixed bottom-28 right-12 h-16 w-16 rounded-full bg-primary lg:hidden"
-        asChild
-      >
-        <Link href={"/compose/post"}>
-          <LuUpload className="h-4 w-4" />
-        </Link>
-      </Button>
+      {session && (
+        <Button
+          className="fixed bottom-28 right-12 h-16 w-16 rounded-full bg-primary lg:hidden"
+          asChild
+        >
+          <Link href={"/compose/post"}>
+            <LuUpload className="h-4 w-4" />
+          </Link>
+        </Button>
+      )}
       <div className="fixed bottom-0 left-0 right-0 z-50 h-20 w-full border-t border-neutral-800 bg-slate-950/75 p-4 backdrop-blur-md lg:hidden">
         <div className="container flex justify-center">
           {itemLinks.map((item) => (
