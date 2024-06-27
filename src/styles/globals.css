@@ -81,6 +81,15 @@
   max-width: 200px;
 }
 
+.image-wrapper::webkit-scrollbar {
+  display: none;
+}
+
+.image-wrapper {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
 @media (max-width: 600px) {
   .cards-container {
     grid-template-columns: 1fr;
