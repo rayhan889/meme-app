@@ -26,3 +26,7 @@ This is a simple app that allows users to create and share memes.
 - [x] Fix get memes query and some conditional rendering
 - [x] Store loggedin user data in database
 - [x] Upload memes functionality
+- [x] Page still need to be refrehsed after upload
+- [x] Uploader profile picture
+- [ ] Fix session user inside db(should it be stored in db?)
+- [ ] Toast notifications after successful upload w/ sonner

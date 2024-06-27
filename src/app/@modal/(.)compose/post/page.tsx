@@ -11,6 +11,7 @@ import { useState, useEffect } from "react";
 import { type ClientUploadedFileData } from "uploadthing/types";
 import { LoadingSpinnerSVG } from "~/components/ui/LoadingSpinner";
 import { Input } from "~/components/ui/input";
+import { useRouter } from "next/navigation";
 
 // inferred input off useUploadThing
 type Input = Parameters<typeof useUploadThing>;
@@ -40,6 +41,7 @@ const useUploadThingInputProps = (...args: Input) => {
 
 export default function UploadMemeModal() {
   const pathname = usePathname();
+  const router = useRouter();
   const currentRoute = pathname + "/compose/post";
   const [description, setDescription] = useState<string>("");
   const [selectedImages, setSelectedImages] = useState<
@@ -49,14 +51,12 @@ export default function UploadMemeModal() {
   >([]);
 
   const { data: session } = useSession();
-  const { inputProps, isUploading } = useUploadThingInputProps(
-    "imageUploader",
-    {
+  const { inputProps, isUploading: isImageUploading } =
+    useUploadThingInputProps("imageUploader", {
       onClientUploadComplete: (result) => {
         setSelectedImages((prevImages) => [...prevImages, ...result]);
       },
-    },
-  );
+    });
 
   useEffect(() => {
     if (pathname !== currentRoute) {
@@ -86,11 +86,13 @@ export default function UploadMemeModal() {
         body: JSON.stringify(payload),
       });
       if (response.ok) {
+        router.back();
+        router.refresh();
         setDescription("");
         setSelectedImages([]);
       }
     } catch (error) {
-      console.log("error", error);
+      console.error("error", error);
     }
   };
 
@@ -109,7 +111,7 @@ export default function UploadMemeModal() {
               className="mr-2 h-12 w-full border-none bg-transparent p-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-opacity-0 focus-visible:ring-offset-0"
               onChange={(e) => setDescription(e.target.value)}
             />
-            {isUploading && selectedImages.length === 0 && (
+            {isImageUploading && selectedImages.length === 0 && (
               <div className="mt-4 flex h-64 w-full flex-col items-center justify-center gap-y-4">
                 <LoadingSpinnerSVG />
                 <span className="text-sm text-neutral-400">
@@ -163,7 +165,7 @@ export default function UploadMemeModal() {
           <Button
             className="flex items-center gap-x-2"
             onClick={handleUpload}
-            disabled={isUploading || description === ""}
+            disabled={isImageUploading || description === ""}
           >
             Post
             <LuSendHorizonal />
