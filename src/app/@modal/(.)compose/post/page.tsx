@@ -7,10 +7,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { useUploadThing } from "~/utils/uploadthing";
 import { LuImage, LuX, LuSendHorizonal } from "react-icons/lu";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { type ClientUploadedFileData } from "uploadthing/types";
 import { LoadingSpinnerSVG } from "~/components/ui/LoadingSpinner";
-import { Input } from "~/components/ui/input";
+import { Textarea } from "~/components/ui/textarea";
 import { useRouter } from "next/navigation";
 
 // inferred input off useUploadThing
@@ -44,6 +44,7 @@ export default function UploadMemeModal() {
   const router = useRouter();
   const currentRoute = pathname + "/compose/post";
   const [description, setDescription] = useState<string>("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [selectedImages, setSelectedImages] = useState<
     ClientUploadedFileData<{
       uploadedBy: string;
@@ -64,6 +65,18 @@ export default function UploadMemeModal() {
       setDescription("");
     }
   }, [pathname, currentRoute]);
+
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }, [description]);
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setDescription(e.target.value);
+  };
 
   const handleUpload = async () => {
     const payload = {
@@ -104,12 +117,14 @@ export default function UploadMemeModal() {
             <AvatarImage src={session?.user.image ?? ""} />
             <AvatarFallback>{session?.user.name ?? ""}</AvatarFallback>
           </Avatar>
-          <div className="flex w-full flex-col">
-            <Input
-              type="text"
+          <div className="flex flex w-full flex-col">
+            <Textarea
+              ref={textareaRef}
+              value={description}
+              onChange={handleTextChange}
               placeholder="What's fun today?"
-              className="mr-2 h-12 w-full border-none bg-transparent p-2 focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-opacity-0 focus-visible:ring-offset-0"
-              onChange={(e) => setDescription(e.target.value)}
+              className="mr-2 w-full flex-grow resize-none overflow-hidden border-none bg-transparent p-2 text-lg focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-opacity-0 focus-visible:ring-offset-0"
+              style={{ height: "auto" }}
             />
             {isImageUploading && selectedImages.length === 0 && (
               <div className="mt-4 flex h-64 w-full flex-col items-center justify-center gap-y-4">
@@ -120,7 +135,7 @@ export default function UploadMemeModal() {
               </div>
             )}
             {selectedImages.length > 0 && (
-              <div className="mt-4 flex max-w-full gap-x-3 overflow-x-auto overflow-y-hidden whitespace-nowrap">
+              <div className="image-wrapper mt-4 flex max-w-full gap-x-3 overflow-x-auto overflow-y-hidden whitespace-nowrap">
                 {selectedImages.map((image) => (
                   <div
                     key={image.key}
@@ -163,7 +178,7 @@ export default function UploadMemeModal() {
             </label>
           </div>
           <Button
-            className="flex items-center gap-x-2"
+            className="flex items-center gap-x-2 rounded-full"
             onClick={handleUpload}
             disabled={isImageUploading || description === ""}
           >
