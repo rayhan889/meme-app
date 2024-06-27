@@ -38,7 +38,10 @@ export default async function RootLayout({
                 {modal}
                 <div id="modal-root" />
               </div>
-              <Toaster />
+              <Toaster
+                className="border-b-[1px] border-neutral-900 bg-slate-950"
+                position="top-center"
+              />
             </SessionProvider>
           </div>
         </div>
