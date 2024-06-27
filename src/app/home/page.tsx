@@ -1,10 +1,9 @@
-import { LuUser } from "react-icons/lu";
 import { getAllMemes } from "~/server/queries";
 import { getServerSession } from "next-auth";
-import Image from "next/image";
 import { type Session } from "next-auth";
 import { authOptions } from "~/server/auth";
 import { AvatarImage, AvatarFallback, Avatar } from "~/components/ui/avatar";
+import UploadMeme from "../compose/post/page";
 
 const Home = async () => {
   const session: Session | null = await getServerSession(authOptions);
@@ -14,28 +13,7 @@ const Home = async () => {
   return (
     <main className="flex h-full w-full flex-col items-center ">
       {/* Post input area */}
-      <div className="flex w-full items-center border-b-[1px] border-neutral-800 p-4">
-        <div className="w-1/4">
-          {!session ? (
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-200">
-              <LuUser />
-            </div>
-          ) : (
-            <Image
-              src={session.user.image ?? ""}
-              alt={session.user.name ?? ""}
-              className="items-center justify-center rounded-full"
-              width={64}
-              height={64}
-            />
-          )}
-        </div>
-        <input
-          type="text"
-          placeholder="What's fun today?"
-          className="mr-2 h-12 w-full border-none bg-transparent p-2 outline-none"
-        />
-      </div>
+      <UploadMeme />
       {/* Memes posts list */}
       <div className="flex w-full flex-col">
         {memePostsWithImages.length === 0 ? (
