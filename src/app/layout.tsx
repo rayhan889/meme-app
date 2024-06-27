@@ -4,6 +4,7 @@ import { Poppins } from "next/font/google";
 import Sidebar from "./_components/layout/Sidebar";
 import { getServerSession } from "next-auth";
 import SessionProvider from "./_components/SessionProvider";
+import { Toaster } from "~/components/ui/sonner";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -37,6 +38,7 @@ export default async function RootLayout({
                 {modal}
                 <div id="modal-root" />
               </div>
+              <Toaster />
             </SessionProvider>
           </div>
         </div>
