@@ -98,6 +98,7 @@ export default function UploadMeme() {
         body: JSON.stringify(payload),
       });
       if (response.ok) {
+        router.replace("/home");
         router.refresh();
         setDescription("");
         setSelectedImages([]);
