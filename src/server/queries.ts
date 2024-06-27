@@ -20,6 +20,7 @@ export const getAllMemes = async () => {
         id: posts.id,
         description: posts.description,
         author: users.name,
+        authorPicture: users.image,
         createdAt: posts.createdAt,
       })
       .from(posts)
