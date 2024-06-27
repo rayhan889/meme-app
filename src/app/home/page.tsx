@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth";
 import Image from "next/image";
 import { type Session } from "next-auth";
 import { authOptions } from "~/server/auth";
+import { AvatarImage, AvatarFallback, Avatar } from "~/components/ui/avatar";
 
 const Home = async () => {
   const session: Session | null = await getServerSession(authOptions);
@@ -48,9 +49,10 @@ const Home = async () => {
               className="flex w-full flex-col items-center gap-y-2 border-b-[1px] border-neutral-800 p-2"
             >
               <div className="flex w-full items-center gap-x-2">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-200">
-                  <LuUser />
-                </div>
+                <Avatar className="flex h-12 w-12 items-center justify-center rounded-full">
+                  <AvatarImage src={meme.authorPicture ?? ""} />
+                  <AvatarFallback>{session?.user.name ?? ""}</AvatarFallback>
+                </Avatar>
                 <div className="flex flex-col">
                   <div className="text-lg font-bold">
                     {meme.author}{" "}
@@ -70,7 +72,7 @@ const Home = async () => {
                       key={image.id}
                       src={image.url ?? ""}
                       alt={image.name ?? ""}
-                      className={`h-[14rem] w-full rounded-md object-cover ${isLast && meme.image.length > 2 ? "col-span-2" : ""}`}
+                      className={`h-[14rem] w-full rounded-md object-cover ${(isLast && meme.image.length > 2) || meme.image.length === 1 ? "col-span-2 min-w-[256px]" : ""}`}
                     />
                   );
                 })}
