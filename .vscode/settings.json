@@ -1,0 +1,22 @@
+{
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "tailwindCSS.includeLanguages": {
+    "html": "html",
+    "javascript": "javascript",
+    "typescript": "typescript",
+    "css": "css",
+    "tailwindCSS.emmetCompletions": true,
+    "[javascript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+    "tailwindCSS.experimental.classRegex": [
+      "\\bclass:\\s*'([^']*)'",
+      "\\bclass:\\s*\"([^\"]*)\""
+    ],
+    "tailwindCSS.includeLanguages": {
+      "html.erb": "html",
+      "javascript": "javascript"
+    }
+  },
+  "editor.quickSuggestions": {
+    "strings": true
+  }
+}
