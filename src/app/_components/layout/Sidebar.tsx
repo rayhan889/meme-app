@@ -24,7 +24,7 @@ const Sidebar = () => {
     <>
       {session && (
         <Button
-          className="fixed bottom-28 right-12 h-16 w-16 rounded-full bg-primary lg:hidden"
+          className="fixed bottom-28 right-12 z-50 h-16 w-16 rounded-full bg-primary lg:hidden"
           asChild
         >
           <Link href={"/compose/post"}>

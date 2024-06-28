@@ -29,7 +29,7 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`${poppins.className}`}>
       <body className="h-screen bg-slate-950 text-white">
-        <div className="container mx-auto h-full max-w-6xl px-0 xl:px-32">
+        <div className="container mx-auto h-full max-w-7xl px-0 px-4 xl:px-32">
           <div className="flex h-full justify-center lg:grid lg:grid-cols-4">
             <SessionProvider session={session}>
               <Sidebar />

@@ -115,7 +115,7 @@ export default function UploadMeme() {
           <AvatarImage src={session?.user.image ?? ""} />
           <AvatarFallback>{session?.user.name ?? ""}</AvatarFallback>
         </Avatar>
-        <div className="flex flex w-full max-w-[21.4rem] flex-col">
+        <div className="flex flex w-full max-w-[21.4rem] flex-col lg:max-w-[25.4rem]">
           <Textarea
             ref={textareaRef}
             value={description}
@@ -137,7 +137,7 @@ export default function UploadMeme() {
               {selectedImages.map((image) => (
                 <div
                   key={image.key}
-                  className={`relative inline-block h-64 ${selectedImages.length > 1 ? "min-w-[256px]" : "w-full"}`}
+                  className={`relative inline-block h-64 ${selectedImages.length > 1 ? "min-w-[160px] lg:min-w-[192px]" : "w-full"}`}
                 >
                   <button
                     className="absolute right-2 top-2 rounded-full bg-neutral-800/70 p-2 text-lg"
