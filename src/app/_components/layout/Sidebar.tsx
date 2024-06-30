@@ -1,9 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { LuHome, LuSearch, LuLogOut, LuLogIn, LuUpload } from "react-icons/lu";
+import {
+  LuHome,
+  LuSearch,
+  LuLogOut,
+  LuLogIn,
+  LuUpload,
+  LuUser2,
+} from "react-icons/lu";
 import { signIn, signOut, useSession } from "next-auth/react";
 import { Button } from "~/components/ui/button";
+
 const Sidebar = () => {
   const { data: session } = useSession();
 
@@ -18,6 +26,15 @@ const Sidebar = () => {
       href: "/search",
       icon: <LuSearch />,
     },
+    ...(session
+      ? [
+          {
+            name: "Profile",
+            href: `/${session.user.name}`,
+            icon: <LuUser2 />,
+          },
+        ]
+      : []),
   ];
 
   return (

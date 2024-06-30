@@ -3,6 +3,8 @@ import { eq, inArray } from "drizzle-orm";
 import { db } from "~/server/db";
 import { images, posts, users } from "~/server/db/schema";
 import { v4 as uuidv4 } from "uuid";
+import { getServerSession } from "next-auth";
+import { authOptions } from "~/server/auth";
 
 export type MemePayload = {
   description: string;
@@ -10,6 +12,39 @@ export type MemePayload = {
     name: string;
     url: string;
   }[];
+};
+
+// get user by username
+export const getUser = async () => {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return null;
+  }
+
+  try {
+    const userQuery = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        emailVerified: users.emailVerified,
+        image: users.image,
+        createdAt: users.createdAt,
+        bannerImage: users.bannerImage,
+      })
+      .from(users)
+      .where(eq(users.name, session.user.name ?? ""));
+
+    if (userQuery.length === 0) {
+      return null;
+    }
+
+    return userQuery[0];
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    throw error;
+  }
 };
 
 // All memes
@@ -63,6 +98,7 @@ export const getMemes = async (userId?: string) => {
         id: posts.id,
         description: posts.description,
         author: users.name,
+        authorPicture: users.image,
         createdAt: posts.createdAt,
       })
       .from(posts)

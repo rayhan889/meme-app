@@ -33,7 +33,7 @@ export default async function RootLayout({
           <div className="flex h-full justify-center lg:grid lg:grid-cols-4">
             <SessionProvider session={session}>
               <Sidebar />
-              <div className="col-span-3 border-x-[1px] border-neutral-800 lg:col-span-2">
+              <div className="col-span-3 w-full border-x-[1px] border-neutral-800 lg:col-span-2">
                 {children}
                 {modal}
                 <div id="modal-root" />
